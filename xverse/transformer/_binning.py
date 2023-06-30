@@ -1,8 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
-import scipy.stats.stats as stats
-import pandas.core.algorithms as algos
+from scipy.stats import spearmanr
 #from sklearn.utils.validation import check_is_fitted
 from sklearn.utils import check_array
 
@@ -157,7 +156,7 @@ class MonotonicBinning(BaseEstimator, TransformerMixin):
                     ser, bins = pd.qcut(X, max_bins, retbins=True)
                     bins_X = pd.DataFrame({"X": X, "Y": y, "Bins": ser})
                     bins_X_grouped = bins_X.groupby('Bins', as_index=True)
-                    r, p = stats.spearmanr(bins_X_grouped.mean().X, bins_X_grouped.mean().y) #spearman operation
+                    r, p = spearmanr(bins_X_grouped.mean().X, bins_X_grouped.mean().y) #spearman operation
                     max_bins = max_bins - 1 
                 except Exception as e:
                     max_bins = max_bins - 1
@@ -167,10 +166,11 @@ class MonotonicBinning(BaseEstimator, TransformerMixin):
             We still want our code to produce bins.
             """
             if len(bins_X_grouped) == 1:
-                bins = algos.quantile(X, np.linspace(0, 1, force_bins)) #creates a new binnning based on forced bins
-                if len(np.unique(bins)) == 2:
-                    bins = np.insert(bins, 0, 1)
-                    bins[1] = bins[1]-(bins[1]/2)
+                #bins = algos.quantile(X, np.linspace(0, 1, force_bins)) #creates a new binnning based on forced bins
+                bins = np.quantile(X, np.linspace(0, 1, force_bins))
+                #if len(np.unique(bins)) == 2:
+                #    bins = np.insert(bins, 0, 1)
+                #    bins[1] = bins[1]-(bins[1]/2)
                 bins = np.sort(np.unique(bins))
         else: #no fit is required
             bins = np.sort(pd.Series.unique(X))
