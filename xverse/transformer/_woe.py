@@ -1,8 +1,6 @@
 import pandas as pd
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
-import scipy.stats.stats as stats
-import pandas.core.algorithms as algos
 #from sklearn.utils.validation import check_is_fitted
 from sklearn.utils import check_array
 from ..transformer import MonotonicBinning
@@ -137,7 +135,7 @@ class WOE(BaseEstimator, TransformerMixin):
             X = self.mono_bin_clf.fit_transform(X, y)
             self.mono_custom_binning = self.mono_bin_clf.bins
         
-        #identify the variables to tranform and assign the bin mapping dictionary
+        #identify the variables to transform and assign the bin mapping dictionary
         self.woe_bins = {} #bin mapping
         
         if not self.mono_custom_binning:
@@ -235,7 +233,8 @@ class WOE(BaseEstimator, TransformerMixin):
         
         #assign computed values to class variables
         try:
-            self.woe_df = self.woe_df.append(temp_woe, ignore_index=True)
+            #self.woe_df = self.woe_df.append(temp_woe, ignore_index=True)
+            self.woe_df = pd.concat([self.woe_df, temp_woe], ignore_index = True)
             self.woe_bins.update(woe_mapping)
         except:
             self.woe_df = temp_woe
